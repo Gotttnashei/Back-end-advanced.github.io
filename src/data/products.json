@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "status": true,
+    "title": "Remera Aesthetic",
+    "description": "Remera negra oversized",
+    "code": "REM001",
+    "price": 18000,
+    "stock": 5,
+    "category": "indumentaria",
+    "thumbnails": [
+      "img/remera1.png"
+    ]
+  }
+]
