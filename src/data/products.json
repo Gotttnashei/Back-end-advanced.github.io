@@ -2,14 +2,34 @@
   {
     "id": 1,
     "status": true,
-    "title": "Remera Aesthetic",
-    "description": "Remera negra oversized",
-    "code": "REM001",
-    "price": 18000,
+    "title": "Remera Oversize",
+    "description": "Corte urbano",
+    "code": "RO-12",
+    "price": 15000,
+    "stock": 12,
+    "category": "ropa",
+    "thumbnails": []
+  },
+  {
+    "id": 2,
+    "status": true,
+    "title": "Jeans Baggy",
+    "description": "Jeans Baggy ",
+    "code": "2",
+    "price": 25000,
     "stock": 5,
-    "category": "indumentaria",
-    "thumbnails": [
-      "img/remera1.png"
-    ]
+    "category": "Pantalones ",
+    "thumbnails": []
+  },
+  {
+    "id": 3,
+    "status": true,
+    "title": "Remera Oversize",
+    "description": "Corte urbano",
+    "code": "RO-12",
+    "price": 15000,
+    "stock": 12,
+    "category": "ropa",
+    "thumbnails": []
   }
 ]
