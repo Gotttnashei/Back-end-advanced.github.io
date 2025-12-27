@@ -1,40 +1,14 @@
-<h2>Productos en tiempo real</h2>
+<h1>Productos en tiempo real</h1>
 
-<section>
-  <h3>Crear nuevo producto</h3>
-  <form id="productForm">
-    <input type="text" name="title" placeholder="Título" required />
-    <input type="text" name="description" placeholder="Descripción" required />
-    <input type="text" name="code" placeholder="Código" required />
-    <input type="number" name="price" placeholder="Precio" required />
-    <input type="number" name="stock" placeholder="Stock" required />
-    <input type="text" name="category" placeholder="Categoría" required />
-    <input type="text" name="thumbnails" placeholder="URLs de imágenes (separadas por coma)" />
-    <button type="submit">Crear producto</button>
-  </form>
-</section>
-
-<hr />
-
-<section>
-  <h3>Listado de productos</h3>
-  <ul id="productsList">
-    {{!-- El contenido inicial se va a reemplazar por lo que mande el socket --}}
-    {{#if products.length}}
-      {{#each products}}
-        <li data-id="{{this.id}}">
-          <h4>{{this.title}}</h4>
-          <p>{{this.description}}</p>
-          <p><strong>Precio:</strong> ${{this.price}}</p>
-          <button class="btn-delete">Eliminar</button>
-          <hr />
-        </li>
-      {{/each}}
-    {{else}}
-      <li>No hay productos cargados.</li>
-    {{/if}}
-  </ul>
-</section>
+<div id="products">
+  {{#each products}}
+    <div style="border:1px solid #ccc; padding:10px; margin:10px 0;">
+      <h3>{{this.title}}</h3>
+      <p>$ {{this.price}}</p>
+      <p>{{this.category}}</p>
+    </div>
+  {{/each}}
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/js/realtime.js"></script>

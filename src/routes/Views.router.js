@@ -1,39 +1,83 @@
-const { Router } = require('express');
-const ProductManager = require('../managers/ProductManager');
+const { Router } = require("express");
+const ProductModel = require("../models/Product.model");
+const CartModel = require("../models/Cart.model");
 
 const router = Router();
-const productManager = new ProductManager('products.json');
 
-// Home: podrías redirigir a /products
-router.get('/', (req, res) => {
-  res.redirect('/products');
-});
-
-// Vista de productos "normales" (se recarga la página)
-router.get('/products', async (req, res) => {
+// /products (lista paginada) -> renderiza "home"
+router.get("/products", async (req, res) => {
   try {
-    const products = await productManager.getProducts();
-    res.render('home', {
-      title: 'AESTHETIC STORE - Productos',
-      products
+    const limit = Number(req.query.limit) > 0 ? Number(req.query.limit) : 10;
+    const page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
+
+    const sortParam = req.query.sort;
+    const sort =
+      sortParam === "asc"
+        ? { price: 1 }
+        : sortParam === "desc"
+        ? { price: -1 }
+        : undefined;
+
+    const queryParam = req.query.query;
+    const filter = {};
+    if (queryParam) {
+      const [key, value] = String(queryParam).split(":");
+      if (key === "category" && value) filter.category = value;
+      if (key === "available" && value) filter.status = value === "true";
+    }
+
+    const result = await ProductModel.paginate(filter, { limit, page, sort, lean: true });
+
+    return res.render("home", {
+      products: result.docs,
+      page: result.page,
+      totalPages: result.totalPages,
+      hasPrevPage: result.hasPrevPage,
+      hasNextPage: result.hasNextPage,
+      prevPage: result.prevPage,
+      nextPage: result.nextPage,
+      limit,
+      sort: sortParam || "",
+      query: queryParam || "",
     });
-  } catch (error) {
-    console.error('Error en GET /products (vista):', error);
-    res.status(500).send('Error interno del servidor');
+  } catch (e) {
+    console.error("Error en GET /products (views):", e);
+    return res.status(500).send("Error interno");
   }
 });
 
-// Vista con WebSocket en tiempo real
-router.get('/realtimeproducts', async (req, res) => {
+// /products/:pid (detalle) -> renderiza "product"
+router.get("/products/:pid", async (req, res) => {
   try {
-    const products = await productManager.getProducts();
-    res.render('realtimeProducts', {
-      title: 'AESTHETIC STORE - Productos en tiempo real',
-      products
-    });
-  } catch (error) {
-    console.error('Error en GET /realtimeproducts:', error);
-    res.status(500).send('Error interno del servidor');
+    const product = await ProductModel.findById(req.params.pid).lean();
+    if (!product) return res.status(404).send("Producto no encontrado");
+    return res.render("productDetail", { product });
+
+  } catch (e) {
+    console.error("Error en GET /products/:pid (views):", e);
+    return res.status(500).send("Error interno");
+  }
+});
+
+// /carts/:cid (vista carrito) -> renderiza "cart"
+router.get("/carts/:cid", async (req, res) => {
+  try {
+    const cart = await CartModel.findById(req.params.cid).populate("products.product").lean();
+    if (!cart) return res.status(404).send("Carrito no encontrado");
+    return res.render("cart", { cart });
+  } catch (e) {
+    console.error("Error en GET /carts/:cid (views):", e);
+    return res.status(500).send("Error interno");
+  }
+});
+
+router.get("/realtimeproducts", async (req, res) => {
+  try {
+    const products = await ProductModel.find().lean();
+    return res.render("realtimeProducts", { products });
+  } catch (e) {
+    console.error("Error en GET /realtimeproducts:", e);
+    return res.status(500).send("Error interno");
   }
 });
 
